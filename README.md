@@ -1,5 +1,8 @@
 # Projeto: Otimização de kNN com Redução de Protótipos (SRM-NN)
-
+ ### Alunos 
+ * **Juan Pabollo**
+ * **Wellington Viana**
+   
 ## 1. Visão Geral
 
 Este projeto explora uma técnica de otimização para o classificador k-Nearest Neighbors (kNN) chamada **Redução de Protótipos**, baseada no princípio de **Minimização do Risco Estrutural (SRM)**.
