@@ -1,71 +1,76 @@
-# kNN com Redução de Dados SRM (Structural Risk Minimization)
-### Alunos
+# Projeto: Otimização de kNN com Redução de Protótipos (SRM-NN)
 
-* **Juan Pabollo**
-* **Wellington Viana**
+## 1. Visão Geral
 
-Este projeto demonstra a implementação do algoritmo k-Nearest Neighbors (kNN) com uma técnica de redução de dados baseada no princípio de Minimização do Risco Estrutural (SRM). O objetivo é reduzir o tamanho do conjunto de treinamento, removendo pontos redundantes, e ainda assim manter (ou até melhorar) a acurácia do classificador.
+Este projeto explora uma técnica de otimização para o classificador k-Nearest Neighbors (kNN) chamada **Redução de Protótipos**, baseada no princípio de **Minimização do Risco Estrutural (SRM)**.
 
-## Como Funciona
+O objetivo principal é reduzir drasticamente o tamanho do conjunto de treinamento, selecionando apenas os pontos mais informativos (protótipos), para então treinar um modelo kNN mais leve e rápido, mantendo uma alta acurácia de classificação.
 
-O código realiza os seguintes passos:
+## 2. Estrutura do Projeto
 
-1.  **Carrega o Dataset**: Utiliza o arquivo `banana.csv`, que contém pontos de dados com coordenadas `x`, `y` e uma `class`.
-2.  **Divide os Dados**: Separa o conjunto de dados em 70% para treinamento e 30% para teste.
-3.  **Aplica a Redução SRM**: Uma função `srm_nn_reduce` é aplicada ao conjunto de treinamento. Essa função busca um subconjunto de dados que seja suficiente para classificar corretamente todos os outros pontos do conjunto de treinamento original. A ideia é manter apenas os pontos mais "informativos".
-4.  **Treina Dois Modelos kNN**:
-    *   Um modelo é treinado com o conjunto de dados de treinamento **original** e completo.
-    *   Outro modelo é treinado com o conjunto de dados de treinamento **reduzido** pela função SRM.
-5.  **Avalia e Compara**:
-    *   Ambos os modelos são avaliados no mesmo conjunto de teste.
-    *   A acurácia de cada modelo é calculada e impressa.
-    *   O percentual de redução do conjunto de dados é exibido.
-6.  **Visualiza os Resultados**: Dois gráficos são plotados para mostrar a distribuição dos pontos de dados: um para o conjunto de treinamento original e outro para o conjunto reduzido, permitindo uma comparação visual da "limpeza" dos dados.
+O código foi refatorado para uma melhor organização, dividindo as responsabilidades em módulos:
 
-## Como Executar o Projeto
+```
+.
+├── database/
+│   └── banana.csv        # O conjunto de dados
+├── utils/
+│   ├── functions.py      # Contém a lógica da redução SRM-NN
+│   └── plot.py           # Contém a função para visualização dos resultados
+├── main.py               # Orquestrador principal do projeto
+└── requirements.txt      # Dependências do projeto
+```
 
-### 1. Pré-requisitos
+-   **`main.py`**: O script principal que carrega os dados, aplica a redução, treina os modelos e chama a função de visualização.
+-   **`utils/functions.py`**: Isola a função `srm_nn_reduce`, que é o núcleo da metodologia de redução de dados.
+-   **`utils/plot.py`**: Contém a função `plot_informations` para gerar os gráficos comparativos.
 
--   Python 3.x instalado.
+## 3. A Metodologia: `srm_nn_reduce`
 
-### 2. Crie um Ambiente Virtual
+O coração do projeto é a função `srm_nn_reduce` (localizada em `utils/functions.py`). A sua lógica é a seguinte:
 
-É uma boa prática criar um ambiente virtual para isolar as dependências do projeto.
+1.  **Identificar Pontos Críticos**: A função começa calculando a distância entre todos os pares de pontos que pertencem a classes opostas. A intuição é que os pontos mais próximos da fronteira de decisão são os mais importantes.
+2.  **Priorizar os Menores Espaços**: Os pares com a menor distância entre si são processados primeiro, pois representam as áreas mais "confusas" ou críticas do espaço de features.
+3.  **Construção Iterativa do Subconjunto**: Um subconjunto de treinamento (`J`) é iniciado vazio. Iterando sobre os pares (do mais próximo ao mais distante), seus pontos são adicionados ao subconjunto.
+4.  **Critério de Parada Inteligente**: Após adicionar um novo par, o algoritmo testa se um classificador 1-NN treinado **apenas com o subconjunto `J`** já é capaz de classificar corretamente **todo o conjunto de treinamento original**.
+5.  **Subconjunto Mínimo**: Assim que esse critério é atendido, o processo para. O resultado é um subconjunto de dados significativamente menor, mas que "representa" a estrutura do conjunto original.
+
+## 4. Como Executar o Projeto
+
+Siga os passos abaixo para configurar e rodar a simulação.
+
+### Passo 1: Configurar o Ambiente Virtual
+
+Para manter as dependências isoladas, é altamente recomendado usar um ambiente virtual.
 
 ```bash
-# Crie um ambiente virtual na pasta do projeto
+# Crie a pasta do ambiente virtual (ex: "venv")
 python -m venv venv
 
-# Ative o ambiente virtual
-# No Windows:
-venv\Scripts\activate
-# No macOS/Linux:
+# Ative o ambiente
+# (No Windows)
+.\venv\Scripts\activate
+# (No macOS/Linux)
 source venv/bin/activate
 ```
 
-### 3. Instale as Dependências
+### Passo 2: Instalar as Dependências
 
-Com o ambiente virtual ativado, instale as bibliotecas necessárias a partir do arquivo `requirements.txt`.
+Com o ambiente ativado, instale as bibliotecas listadas em `requirements.txt`.
 
 ```bash
+# O pip usará o arquivo para instalar as versões corretas das bibliotecas
 pip install -r requirements.txt
 ```
 
-### 4. Execute o Código
+### Passo 3: Executar o Script Principal
 
-Para rodar o script principal, execute o seguinte comando no seu terminal:
+Execute o arquivo `main.py`.
 
 ```bash
 python main.py
 ```
 
-### 5. Resultados Esperados
+### Passo 4: Interpretar os Resultados
 
-Após a execução, você verá no terminal:
-
--   O tamanho do conjunto de treinamento original.
--   O tamanho do conjunto de treinamento reduzido e o percentual de redução.
--   A acurácia do modelo kNN com o conjunto original.
--   A acurácia do modelo kNN com o conjunto reduzido.
-
-Além disso, uma janela com dois gráficos será exibida, mostrando a comparação visual dos conjuntos de dados.
+O terminal exibirá as métricas de acurácia e redução. Uma janela se abrirá com os gráficos comparativos, permitindo uma análise visual da eficácia da técnica de redução.
