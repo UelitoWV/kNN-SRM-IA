@@ -87,7 +87,6 @@ def srm_nn_reduce_fast(X, y):
     
     # --- OTIMIZAÇÃO 1: Cálculo Vetorizado de Pares e Distâncias ---
     # Calcula a matriz de distâncias completa de uma vez (muito mais rápido que loops)
-    # Nota: Para 4000 amostras, isso usa ~128MB de RAM, o que é tranquilo.
     full_dists = squareform(pdist(X))
     
     # Cria máscaras para identificar pares de classes opostas (triângulo superior)
@@ -100,16 +99,14 @@ def srm_nn_reduce_fast(X, y):
     rows, cols = np.nonzero(mask_valid)
     dists = full_dists[mask_valid]
     
-    # Ordena os pares pela distância (equivalente ao .sort do código original)
     sort_idx = np.argsort(dists)
     sorted_rows = rows[sort_idx]
     sorted_cols = cols[sort_idx]
     
-    # --- OTIMIZAÇÃO 2: Atualização Incremental do 1-NN ---
+
     # Em vez de rodar knn.predict(X) a cada iteração, mantemos dois vetores:
     # 1. A menor distância encontrada até agora para cada ponto (current_min_dists)
     # 2. A classe do ponto que gerou essa menor distância (current_preds)
-    
     current_min_dists = np.full(n_samples, np.inf)
     current_preds = np.empty(n_samples, dtype=y.dtype) # Inicializa vazio
     
@@ -126,8 +123,7 @@ def srm_nn_reduce_fast(X, y):
             # Pega as distâncias de 'i' para todo o resto do dataset
             dists_to_new = full_dists[i]
             
-            # Descobre quais pontos do dataset ficaram "mais perto" de 'i' 
-            # do que do seu vizinho anterior. Atualiza só esses.
+            # Descobre quais pontos do dataset ficaram "mais perto" de 'i' do que do seu vizinho anterior. Atualiza só esses.
             improved_mask = dists_to_new < current_min_dists
             current_min_dists[improved_mask] = dists_to_new[improved_mask]
             current_preds[improved_mask] = y[i]
@@ -149,6 +145,6 @@ def srm_nn_reduce_fast(X, y):
         if added_new:
             if np.all(current_min_dists < np.inf) and np.all(current_preds == y):
                 break
-            
+
     J = sorted(list(J_set))
     return X[J], y[J]
