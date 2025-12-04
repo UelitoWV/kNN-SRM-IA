@@ -85,7 +85,6 @@ def srm_nn_reduce(X, y):
 def srm_nn_reduce_fast(X, y):
     n_samples = X.shape[0]
     
-    # --- OTIMIZAÇÃO 1: Cálculo Vetorizado de Pares e Distâncias ---
     # Calcula a matriz de distâncias completa de uma vez (muito mais rápido que loops)
     full_dists = squareform(pdist(X))
     
