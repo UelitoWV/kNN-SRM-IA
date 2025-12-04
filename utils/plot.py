@@ -1,9 +1,9 @@
 import matplotlib.pyplot as plt
 
-def plot_informations(X_train, y_train, X_reduced, y_reduced, reduction, acc_full, acc_srm):
+def plot_informations(X_train, y_train, X_reduced, y_reduced, reduction, acc_full, acc_srm, k_full, k_srm):
     print(f"--- RESULTADOS ---")
-    print(f"Tamanho Original: {len(X_train)}")
-    print(f"Tamanho Reduzido: {len(X_reduced)} (Redução de {reduction:.2f}%)")
+    print(f"Tamanho Original (K = {k_full}): {len(X_train)}")
+    print(f"Tamanho Reduzido(K = {k_srm}): {len(X_reduced)} (Redução de {reduction:.2f}%)")
     print(f"Acurácia Original: {acc_full:.4f}")
     print(f"Acurácia SRM:      {acc_srm:.4f}")
 
