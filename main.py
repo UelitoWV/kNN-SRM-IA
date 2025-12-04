@@ -2,7 +2,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 
-from utils.functions import srm_nn_reduce,srm_nn_reduce_fast
+from utils.functions import srm_nn_reduce
 from utils.plot import plot_informations
 
 # Carregar dados
@@ -25,7 +25,7 @@ knn_full.fit(X_train, y_train)
 acc_full = knn_full.score(X_test, y_test)
 
 # kNN SRM-NN (Reduzido)
-knn_srm = KNeighborsClassifier(n_neighbors=1) 
+knn_srm = KNeighborsClassifier(n_neighbors=3) 
 knn_srm.fit(X_reduced, y_reduced)
 acc_srm = knn_srm.score(X_test, y_test)
 
