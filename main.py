@@ -25,7 +25,7 @@ knn_full.fit(X_train, y_train)
 acc_full = knn_full.score(X_test, y_test)
 
 # kNN SRM-NN (Reduzido)
-knn_srm = KNeighborsClassifier(n_neighbors=3) 
+knn_srm = KNeighborsClassifier(n_neighbors=1) 
 knn_srm.fit(X_reduced, y_reduced)
 acc_srm = knn_srm.score(X_test, y_test)
 
